@@ -3,7 +3,11 @@
 namespace App\Services;
 
 use App\Repositories\Interfaces\ProductRepositoryInterface;
+use Illuminate\Pagination\LengthAwarePaginator;
 
+/**
+ * @method LengthAwarePaginator getProductsWithFilters(array $filters)
+ */
 class ProductService extends AbstractService
 {
     /**

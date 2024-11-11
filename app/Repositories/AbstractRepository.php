@@ -86,7 +86,7 @@ abstract class AbstractRepository implements AbstractRepositoryInterface
      */
     public function get(): Collection
     {
-        return $this->newQuery()->toBase()->get();
+        return $this->newQuery()->get();
     }
 
     /**
