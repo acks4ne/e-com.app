@@ -29,7 +29,7 @@ class AuthController extends Controller
 
         $token = $user->createToken("Personal Access Token for {$user->login}")->plainTextToken;
 
-        return response()->json(['token' => $token]);
+        return $this->response(['token' => $token]);
     }
 
     /**
@@ -48,7 +48,7 @@ class AuthController extends Controller
 
         $token = $user->createToken("Personal Access Token for {$user->login}")->plainTextToken;
 
-        return response()->json(['token' => $token]);
+        return $this->response(['token' => $token]);
     }
 
     /**
@@ -58,6 +58,6 @@ class AuthController extends Controller
     {
         Auth::user()->currentAccessToken()->delete();
 
-        return response()->json(['message' => 'Logged out successfully!']);
+        return $this->response(['message' => 'Logged out successfully!']);
     }
 }
