@@ -17,14 +17,6 @@ class IndexRequest extends BaseRequest
     protected int $page = 1;
 
     /**
-     * @return bool
-     */
-    public function authorize(): bool
-    {
-        return true;
-    }
-
-    /**
      * @return void
      */
     public function prepareForValidation(): void
