@@ -49,5 +49,5 @@ Route::middleware(['auth:sanctum'])->group(function () {
 });
 
 Route::post('/register', [AuthController::class, 'register'])->withoutMiddleware(['auth:sanctum']);
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'login'])->name('login');
 
