@@ -3,7 +3,11 @@
 namespace App\Services;
 
 use App\Repositories\Interfaces\OrderRepositoryInterface;
+use Illuminate\Pagination\LengthAwarePaginator;
 
+/**
+ * @method LengthAwarePaginator getOrdersHistoryWithFilters(int $userId, array $filters)
+ */
 class OrderService extends AbstractService
 {
     /**

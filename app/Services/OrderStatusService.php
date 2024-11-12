@@ -2,8 +2,12 @@
 
 namespace App\Services;
 
+use App\Models\OrderStatus;
 use App\Repositories\Interfaces\OrderStatusRepositoryInterface;
 
+/**
+ * @method null|OrderStatus firstByAlias(string $alias)
+ */
 class OrderStatusService extends AbstractService
 {
     /**

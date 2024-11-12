@@ -2,19 +2,21 @@
 
 namespace App\Models;
 
+use App\Traits\HasAlias;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class OrderStatus extends Model
 {
-    use HasFactory;
+    use HasFactory, HasAlias;
 
     /**
      * @var string[]
      */
     protected $fillable = [
-        'name'
+        'name',
+        'alias'
     ];
 
     /**

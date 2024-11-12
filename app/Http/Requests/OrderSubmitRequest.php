@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 
-class StoreUserRequest extends BaseRequest
+class OrderSubmitRequest extends BaseRequest
 {
     /**
      * Get the validation rules that apply to the request.
@@ -14,8 +14,7 @@ class StoreUserRequest extends BaseRequest
     public function rules(): array
     {
         return [
-            'login' => ['required', 'string', 'max:255'],
-            'password' => ['required', 'string', 'max:255']
+            //
         ];
     }
 }

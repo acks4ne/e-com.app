@@ -16,4 +16,14 @@ class OrderStatusRepository extends AbstractRepository implements RepositoryInte
     {
         parent::__construct($model);
     }
+
+    /**
+     * @param string $alias
+     * @return OrderStatus|null
+     */
+    public function firstByAlias(string $alias): ?OrderStatus
+    {
+        return $this->newQuery()
+            ->firstWhere('alias', $alias);
+    }
 }

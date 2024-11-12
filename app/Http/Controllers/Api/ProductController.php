@@ -24,9 +24,8 @@ class ProductController extends Controller
     {
         return $this->response(
             $this->toPaginateCollection(
-                $this->productService->getProductsWithFilters(
-                    $request->validated()
-                ), ProductResource::class
+                $this->productService->getProductsWithFilters($request->validated()),
+                ProductResource::class
             ),
         );
     }
@@ -39,7 +38,8 @@ class ProductController extends Controller
     public function show(int $id): JsonResponse
     {
         $product = $this->productService->firstById($id);
-        throw_if(is_null($product), new NotFoundHttpException('Продукт не найден'));
+
+        throw_if(is_null($product), new NotFoundHttpException('Product is not found.'));
 
         return $this->response($product);
     }
