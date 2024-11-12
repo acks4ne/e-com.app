@@ -51,8 +51,11 @@ class AuthController extends Controller
 
         $user = Auth::user();
 
-        $token = $user->createToken("Personal Access Token for {$user['login']}", ['*'],
-            Carbon::now()->addHours())->plainTextToken;
+        $token = $user->createToken(
+            "Personal Access Token for {$user['login']}",
+            ['*'],
+            Carbon::now()->addHours()
+        )->plainTextToken;
 
         return $this->response(['token' => $token]);
     }

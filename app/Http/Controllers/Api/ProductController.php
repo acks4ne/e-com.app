@@ -39,7 +39,7 @@ class ProductController extends Controller
     {
         $product = $this->productService->firstById($id);
 
-        throw_if(is_null($product), new NotFoundHttpException('Product is not found.'));
+        throw_if(is_null($product), new NotFoundHttpException('Product is not found.', code:404));
 
         return $this->response($product);
     }
