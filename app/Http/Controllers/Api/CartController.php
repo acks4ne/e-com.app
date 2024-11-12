@@ -19,6 +19,11 @@ use Illuminate\Support\Facades\URL;
 
 class CartController extends Controller
 {
+    /**
+     * @param OrderStatusService $orderStatusService
+     * @param OrderService       $orderService
+     * @param CartProductService $cartProductService
+     */
     public function __construct(
         protected OrderStatusService $orderStatusService,
         protected OrderService       $orderService,
@@ -50,7 +55,7 @@ class CartController extends Controller
     {
         $user = auth()->user();
 
-        return optional($user)->cart;
+        return optional($user)['cart'];
     }
 
     /**
@@ -139,7 +144,11 @@ class CartController extends Controller
         $cart = $user['cart'];
 
         if (!$cart || $cart['products']->isEmpty()) {
-            return $this->response(status:400, message:'Cart is empty.');
+            return $this->response(
+                success:false,
+                status:400,
+                message:'Cart is empty.'
+            );
         }
 
         $paymentMethod = $request->input('payment_method_id') ?? $request->input('payment_method_alias');

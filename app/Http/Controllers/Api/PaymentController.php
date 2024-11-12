@@ -11,6 +11,10 @@ use Illuminate\Support\Facades\URL;
 
 class PaymentController extends Controller
 {
+    /**
+     * @param CartService  $cartService
+     * @param OrderService $orderService
+     */
     public function __construct(
         protected CartService  $cartService,
         protected OrderService $orderService
@@ -27,11 +31,19 @@ class PaymentController extends Controller
         $order = $this->orderService->firstById($orderId);
 
         if (!$order || $order['user_id'] !== $userId) {
-            return $this->response(success:false, status:403, message:'Invalid cart.');
+            return $this->response(
+                success:false,
+                status:403,
+                message:'Invalid cart.'
+            );
         }
 
         if (!$request->hasValidSignature() || $order['status']['alias'] === 'OTMENEN') {
-            return $this->response(success:false, status:403, message:'Payment link has expired or is invalid.');
+            return $this->response(
+                success:false,
+                status:403,
+                message:'Payment link has expired or is invalid.'
+            );
         }
 
         $data = md5($userId . $orderId . (int) $request->query('payment_method_id'));
@@ -39,7 +51,11 @@ class PaymentController extends Controller
         $token = $request->query('token');
 
         if ($data !== $token) {
-            return $this->response(success:false, status:403, message:'Invalid token.');
+            return $this->response(
+                success:false,
+                status:403,
+                message:'Invalid token.'
+            );
         }
 
         $orderUpdateLink = URL::temporarySignedRoute(

@@ -8,12 +8,14 @@ use App\Http\Resources\OrderResource;
 use App\Services\OrderService;
 use App\Services\OrderStatusService;
 use Illuminate\Http\JsonResponse;
-use Symfony\Component\CssSelector\Exception\InternalErrorException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
 class OrderController extends Controller
 {
+    /**
+     * @param OrderService       $orderService
+     * @param OrderStatusService $orderStatusService
+     */
     public function __construct(
         protected OrderService       $orderService,
         protected OrderStatusService $orderStatusService,
@@ -27,7 +29,10 @@ class OrderController extends Controller
     {
         return $this->response(
             $this->toPaginateCollection(
-                $this->orderService->getOrdersHistoryWithFilters(auth()->user()['id'], $request->validated()),
+                $this->orderService->getOrdersHistoryWithFilters(
+                    auth()->user()['id'],
+                    $request->validated()
+                ),
                 OrderResource::class
             ),
         );
@@ -42,7 +47,13 @@ class OrderController extends Controller
     {
         $order = $this->orderService->firstById($id);
 
-        throw_if(is_null($order), new NotFoundHttpException('Order is not found.'));
+        if (is_null($order)) {
+            return $this->response(
+                success:false,
+                status:404,
+                message:'Order is not found.'
+            );
+        }
 
         return $this->response($order);
     }
@@ -58,7 +69,13 @@ class OrderController extends Controller
 
         $orderStatusId = $this->orderStatusService->firstByAlias('OPLACEN')?->id;
 
-        throw_if(is_null($orderStatusId), new InternalErrorException('OrderStatus is not defined.', 500));
+        if (is_null($orderStatusId)) {
+            return $this->response(
+                success:false,
+                status:500,
+                message:'OrderStatus is not defined.'
+            );
+        }
 
         $order->update([
             'order_status_id' => $orderStatusId

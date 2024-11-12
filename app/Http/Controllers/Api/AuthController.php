@@ -14,6 +14,10 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
+    /**
+     * @param UserService $userService
+     * @param CartService $cartService
+     */
     public function __construct(
         protected UserService $userService,
         protected CartService $cartService,
@@ -30,8 +34,11 @@ class AuthController extends Controller
             'password' => Hash::make($request['password']),
         ]);
 
-        $token = $user->createToken("Personal Access Token for {$user['login']}", ['*'],
-            Carbon::now()->addHours())->plainTextToken;
+        $token = $user->createToken(
+            "access_token",
+            ['*'],
+            Carbon::now()->addHours()
+        )->plainTextToken;
 
         return $this->response(['token' => $token]);
     }
@@ -46,13 +53,17 @@ class AuthController extends Controller
             return $this->response(
                 success:false,
                 status:401,
-                message:'Invalid login or password provided');
+                message:'Invalid login or password provided.'
+            );
         }
 
-        $user = Auth::user();
+        $user = auth()->user();
 
-        $token = $user->createToken("Personal Access Token for {$user['login']}", ['*'],
-            Carbon::now()->addHours())->plainTextToken;
+        $token = $user->createToken(
+            "access_token",
+            ['*'],
+            Carbon::now()->addHours()
+        )->plainTextToken;
 
         return $this->response(['token' => $token]);
     }
@@ -62,8 +73,8 @@ class AuthController extends Controller
      */
     public function logout(): JsonResponse
     {
-        Auth::user()->currentAccessToken()->delete();
+        auth()->user()->currentAccessToken()->delete();
 
-        return $this->response(message:'Logged out successfully!');
+        return $this->response(message:'Logged out successfully.');
     }
 }

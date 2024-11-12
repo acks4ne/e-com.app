@@ -7,11 +7,13 @@ use App\Http\Requests\ProductFilterRequest;
 use App\Http\Resources\ProductResource;
 use App\Services\ProductService;
 use Illuminate\Http\JsonResponse;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
 class ProductController extends Controller
 {
+    /**
+     * @param ProductService $productService
+     */
     public function __construct(
         protected ProductService $productService
     ) {}
@@ -39,7 +41,13 @@ class ProductController extends Controller
     {
         $product = $this->productService->firstById($id);
 
-        throw_if(is_null($product), new NotFoundHttpException('Product is not found.'));
+        if (is_null($product)) {
+            return $this->response(
+                success:false,
+                status:404,
+                message:'Product is not found.'
+            );
+        }
 
         return $this->response($product);
     }
