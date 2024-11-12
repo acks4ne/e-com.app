@@ -3,9 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
-use Illuminate\Foundation\Http\FormRequest;
 
-class IndexRequest extends FormRequest
+class IndexRequest extends BaseRequest
 {
     /**
      * @var int
@@ -45,7 +44,7 @@ class IndexRequest extends FormRequest
      * @param int   $default
      * @return int
      */
-    private function getNonNegativeValue(mixed $value, int $default): int
+    protected function getNonNegativeValue(mixed $value, int $default): int
     {
         return (is_numeric($value) && (int) $value > 0) ? (int) $value : $default;
     }
