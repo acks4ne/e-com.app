@@ -25,11 +25,11 @@ class AuthController extends Controller
     public function register(StoreUserRequest $request): JsonResponse
     {
         $user = $this->userService->create([
-            'login' => $request->login,
-            'password' => Hash::make($request->password),
+            'login' => $request['login'],
+            'password' => Hash::make($request['password']),
         ]);
 
-        $token = $user->createToken("Personal Access Token for {$user->login}")->plainTextToken;
+        $token = $user->createToken("Personal Access Token for {$user['login']}")->plainTextToken;
 
         return $this->response(['token' => $token]);
     }
@@ -48,7 +48,7 @@ class AuthController extends Controller
 
         $user = Auth::user();
 
-        $token = $user->createToken("Personal Access Token for {$user->login}")->plainTextToken;
+        $token = $user->createToken("Personal Access Token for {$user['login']}")->plainTextToken;
 
         return $this->response(['token' => $token]);
     }

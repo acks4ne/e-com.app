@@ -45,9 +45,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/cart', 'index')->name('cart.index');
     });
 
-    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 
-Route::post('/register', [AuthController::class, 'register'])->withoutMiddleware(['auth:sanctum']);
+Route::post('/register', [AuthController::class, 'register'])->withoutMiddleware(['auth:sanctum'])->name('register');
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 
