@@ -27,7 +27,6 @@ class AuthController extends Controller
         $user = $this->userService->create([
             'login' => $request->login,
             'password' => Hash::make($request->password),
-            'cart_id' => 1
         ]);
 
         $token = $user->createToken("Personal Access Token for {$user->login}")->plainTextToken;
