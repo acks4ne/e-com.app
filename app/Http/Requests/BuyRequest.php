@@ -7,14 +7,6 @@ use Illuminate\Contracts\Validation\ValidationRule;
 class BuyRequest extends BaseRequest
 {
     /**
-     * @return bool
-     */
-    public function authorize(): bool
-    {
-        return auth()->check();
-    }
-
-    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, ValidationRule|array<mixed>|string>

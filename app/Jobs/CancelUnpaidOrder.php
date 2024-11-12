@@ -7,6 +7,7 @@ use App\Models\OrderStatus;
 use App\Services\OrderService;
 use App\Services\OrderStatusService;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Queue\Queueable;
 use Symfony\Component\CssSelector\Exception\InternalErrorException;
 use Throwable;
@@ -15,7 +16,13 @@ class CancelUnpaidOrder implements ShouldQueue
 {
     use Queueable;
 
+    /**
+     * @var OrderService|Application|mixed
+     */
     protected OrderService $orderService;
+    /**
+     * @var OrderStatusService|Application|mixed
+     */
     protected OrderStatusService $orderStatusService;
 
     /**
@@ -37,19 +44,21 @@ class CancelUnpaidOrder implements ShouldQueue
 
         $pendingStatusId = $this->checkIfStatusExists('NA_OPLATU')['id'];
         if ($order && $order['order_status_id'] === $pendingStatusId) {
-            $canceledStatusId = $this->checkIfStatusExists('OTMENEN')->id;
+            $canceledStatusId = $this->checkIfStatusExists('OTMENEN')['id'];
             $order->update(['order_status_id' => $canceledStatusId]);
         }
     }
 
     /**
+     * @param string $alias
+     * @return OrderStatus
      * @throws Throwable
      */
     private function checkIfStatusExists(string $alias): OrderStatus
     {
         $orderStatus = $this->orderStatusService->firstByAlias($alias);
 
-        throw_if(is_null($orderStatus), new InternalErrorException('OrderStatus is not defined.', 500));
+        throw_if(is_null($orderStatus), new InternalErrorException('OrderStatus is not defined.'));
 
         return $orderStatus;
     }

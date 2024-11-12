@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 trait HasAlias
 {
+    /**
+     * @return void
+     */
     protected static function boot(): void
     {
         parent::boot();
