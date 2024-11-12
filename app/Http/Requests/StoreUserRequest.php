@@ -16,7 +16,7 @@ class StoreUserRequest extends FormRequest
     {
         return [
             'login' => ['required', 'string', 'max:255', 'unique:users,login'],
-            'password' => ['required', 'string', 'between:8,255', 'confirmed']
+            'password' => ['required', 'string', 'between:8,255']
         ];
     }
 }
