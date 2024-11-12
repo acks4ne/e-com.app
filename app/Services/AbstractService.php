@@ -12,7 +12,7 @@ use Illuminate\Support\Collection;
 /**
  * @method LengthAwarePaginator paginate(int $perPage = 15, array $columns = ['*'], string $pageName = 'page', ?int $page = null)
  * @method Collection get()
- * @method Model|null firstById(int $id)
+ * @method null|Model firstById(int $id)
  * @method bool existsById(int $id)
  * @method bool exists($value, string $column = 'id')
  * @method bool destroyById(int|array $id)

@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
-use stdClass;
 
 abstract class AbstractRepository implements AbstractRepositoryInterface
 {
@@ -48,7 +47,7 @@ abstract class AbstractRepository implements AbstractRepositoryInterface
      * @param int $id
      * @return null|Model
      */
-    public function firstById(int $id): ?stdClass
+    public function firstById(int $id): ?Model
     {
         return $this->first($id);
     }
@@ -57,11 +56,11 @@ abstract class AbstractRepository implements AbstractRepositoryInterface
      * @param mixed  $value
      * @param string $column
      *
-     * @return stdClass|null
+     * @return null|Model
      */
-    public function first(mixed $value, string $column = 'id'): ?stdClass
+    public function first(mixed $value, string $column = 'id'): ?Model
     {
-        $qb = $this->newQuery()->toBase();
+        $qb = $this->newQuery();
 
         return is_array($value)
             ? $qb->where($value)->first()
