@@ -14,7 +14,7 @@ class OrderStatusSeeder extends Seeder
     {
         OrderStatus::factory()->createMany([
             [
-                'name' => 'На оплату'
+                'name' => 'На оплату',
             ],
             [
                 'name' => 'Оплачен',

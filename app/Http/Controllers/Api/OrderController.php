@@ -3,48 +3,67 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Order;
-use Illuminate\Http\Request;
+use App\Http\Requests\OrderFilterRequest;
+use App\Http\Resources\OrderResource;
+use App\Services\OrderService;
+use App\Services\OrderStatusService;
+use Illuminate\Http\JsonResponse;
+use Symfony\Component\CssSelector\Exception\InternalErrorException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Throwable;
 
 class OrderController extends Controller
 {
+    public function __construct(
+        protected OrderService       $orderService,
+        protected OrderStatusService $orderStatusService,
+    ) {}
+
     /**
-     * Display a listing of the resource.
+     * @param OrderFilterRequest $request
+     * @return JsonResponse
      */
-    public function index()
+    public function index(OrderFilterRequest $request): JsonResponse
     {
-        //
+        return $this->response(
+            $this->toPaginateCollection(
+                $this->orderService->getOrdersHistoryWithFilters(auth()->user()['id'], $request->validated()),
+                OrderResource::class
+            ),
+        );
     }
 
     /**
-     * Store a newly created resource in storage.
+     * @param int $id
+     * @return JsonResponse
+     * @throws Throwable
      */
-    public function store(Request $request)
+    public function show(int $id): JsonResponse
     {
-        //
+        $order = $this->orderService->firstById($id);
+
+        throw_if(is_null($order), new NotFoundHttpException('Order is not found.'));
+
+        return $this->response($order);
     }
 
     /**
-     * Display the specified resource.
+     * @param int $id
+     * @return JsonResponse
+     * @throws Throwable
      */
-    public function show(Order $order)
+    public function submit(int $id): JsonResponse
     {
-        //
-    }
+        $order = $this->orderService->firstById($id);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Order $order)
-    {
-        //
-    }
+        $orderStatusId = $this->orderStatusService->firstByAlias('OPLACEN')?->id;
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Order $order)
-    {
-        //
+        throw_if(is_null($orderStatusId), new InternalErrorException('OrderStatus is not defined.', 500));
+
+        $order->update([
+            'order_status_id' => $orderStatusId
+        ]);
+
+        return $this->response(message:'Order is successfully paid.');
     }
 }
