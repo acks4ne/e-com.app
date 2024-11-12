@@ -8,6 +8,7 @@ use App\Http\Requests\StoreUserRequest;
 use App\Services\CartService;
 use App\Services\UserService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
@@ -29,7 +30,8 @@ class AuthController extends Controller
             'password' => Hash::make($request['password']),
         ]);
 
-        $token = $user->createToken("Personal Access Token for {$user['login']}")->plainTextToken;
+        $token = $user->createToken("Personal Access Token for {$user['login']}", ['*'],
+            Carbon::now()->addHours())->plainTextToken;
 
         return $this->response(['token' => $token]);
     }
@@ -41,14 +43,16 @@ class AuthController extends Controller
     public function login(LoginUserRequest $request): JsonResponse
     {
         if (!Auth::attempt($request->validated())) {
-            return $this->response([
-                'message' => 'Invalid login or password provided'
-            ], 401);
+            return $this->response(
+                success:false,
+                status:401,
+                message:'Invalid login or password provided');
         }
 
         $user = Auth::user();
 
-        $token = $user->createToken("Personal Access Token for {$user['login']}")->plainTextToken;
+        $token = $user->createToken("Personal Access Token for {$user['login']}", ['*'],
+            Carbon::now()->addHours())->plainTextToken;
 
         return $this->response(['token' => $token]);
     }
@@ -60,6 +64,6 @@ class AuthController extends Controller
     {
         Auth::user()->currentAccessToken()->delete();
 
-        return $this->response(['message' => 'Logged out successfully!']);
+        return $this->response(message:'Logged out successfully!');
     }
 }

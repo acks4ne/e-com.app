@@ -6,8 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Services\CartService;
 use App\Services\OrderService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
 
 class PaymentController extends Controller
@@ -19,16 +18,15 @@ class PaymentController extends Controller
 
     /**
      * @param Request $request
+     * @param int     $userId
      * @param int     $orderId
      * @return JsonResponse
      */
-    public function __invoke(Request $request, int $orderId): JsonResponse
+    public function __invoke(Request $request, int $userId, int $orderId): JsonResponse
     {
-        $user = auth()->user();
-
         $order = $this->orderService->firstById($orderId);
 
-        if (!$order || $order['user_id'] !== $user['id']) {
+        if (!$order || $order['user_id'] !== $userId) {
             return $this->response(success:false, status:403, message:'Invalid cart.');
         }
 
@@ -36,17 +34,18 @@ class PaymentController extends Controller
             return $this->response(success:false, status:403, message:'Payment link has expired or is invalid.');
         }
 
-        $data = $user['id'] . $orderId . $request->query('expires') . $request->query('payment_method_id');
+        $data = md5($userId . $orderId . (int) $request->query('payment_method_id'));
 
         $token = $request->query('token');
-        if (!Hash::check($data, $token)) {
+
+        if ($data !== $token) {
             return $this->response(success:false, status:403, message:'Invalid token.');
         }
 
         $orderUpdateLink = URL::temporarySignedRoute(
             'orders.submit',
             now()->addMinutes(30),
-            ['order_id' => $order['id']]
+            ['id' => $order['id']]
         );
 
         return $this->response([

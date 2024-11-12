@@ -14,7 +14,11 @@ class UserObserver
      */
     public function created(User $user): void
     {
-        $user['cart_id'] = $user->cart()->create()['id'];
+        $cart = $this->cartService->create([]);
+
+        $user['cart_id'] = $cart['id'];
+
+        $user->save();
     }
 
     /**

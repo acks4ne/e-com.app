@@ -13,4 +13,14 @@ abstract class BaseRequest extends FormRequest
     {
         return auth()->check();
     }
+
+    /**
+     * @param mixed $value
+     * @param int   $default
+     * @return int
+     */
+    protected function getNonNegativeValue(mixed $value, int $default): int
+    {
+        return (is_numeric($value) && (int) $value > 0) ? (int) $value : $default;
+    }
 }

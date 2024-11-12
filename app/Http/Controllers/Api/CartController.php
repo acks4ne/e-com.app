@@ -4,58 +4,136 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BuyRequest;
+use App\Http\Requests\DestroyProductInCartRequest;
+use App\Http\Requests\IndexRequest;
+use App\Http\Requests\StoreProductToCartRequest;
+use App\Http\Requests\UpdateProductInCartRequest;
+use App\Http\Resources\CartProductResource;
+use App\Models\Cart;
+use App\Services\CartProductService;
 use App\Services\OrderService;
 use App\Services\OrderStatusService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\URL;
 
 class CartController extends Controller
 {
     public function __construct(
         protected OrderStatusService $orderStatusService,
-        protected OrderService       $orderService
+        protected OrderService       $orderService,
+        protected CartProductService $cartProductService,
     ) {}
 
-    public function index()
+    /**
+     * @param IndexRequest $request
+     * @return JsonResponse
+     */
+    public function index(IndexRequest $request): JsonResponse
     {
-        dd(auth());
+        $cart = $this->getCart();
+
+        $products = $cart->products();
+
+        return $this->response(
+            $this->toPaginateCollection(
+                $products->paginate(perPage:$request['limit'], page:$request['page']),
+                CartProductResource::class
+            ),
+        );
     }
 
     /**
-     * @param Request $request
-     * @return JsonResponse
+     * @return Cart
      */
-    public function addToCart(Request $request): JsonResponse
+    private function getCart(): Cart
     {
-        return $this->response();
+        $user = auth()->user();
+
+        return optional($user)->cart;
     }
 
     /**
-     * @param Request $request
+     * @param StoreProductToCartRequest $request
      * @return JsonResponse
      */
-    public function updateInCart(Request $request): JsonResponse
+    public function addToCart(StoreProductToCartRequest $request): JsonResponse
     {
-        return $this->response();
+        $cart = $this->getCart();
+        $cartProduct = $this->cartProductService->getByCartAndProductId($cart['id'], $request['product_id']);
+
+        if (is_null($cartProduct)) {
+            $this->cartProductService->create([
+                'product_id' => $request['product_id'],
+                'cart_id' => $cart['id'],
+                'quantity' => $request['quantity'],
+            ]);
+        } else {
+            $this->cartProductService->update($cartProduct['id'], [
+                'quantity' => $cartProduct['quantity'] + $request['quantity'],
+            ]);
+        }
+
+        return $this->response(message:'Product added to cart successfully.');
     }
 
     /**
-     * @param Request $request
+     * @param UpdateProductInCartRequest $request
      * @return JsonResponse
      */
-    public function removeFromCart(Request $request): JsonResponse
+    public function updateInCart(UpdateProductInCartRequest $request): JsonResponse
     {
-        return $this->response();
+        $cart = $this->getCart();
+        $cartProduct = $this->cartProductService->getByCartAndProductId($cart['id'], $request['product_id']);
+
+        if (is_null($cartProduct)) {
+            return $this->response(
+                success:false,
+                status:404,
+                message:'Product not found in the cart.'
+            );
+        }
+
+        if ($request['quantity'] === 0) {
+            $this->cartProductService->destroyById($cartProduct['id']);
+
+            return $this->response(message:'Product was removed successfully.');
+        }
+
+        $this->cartProductService->update($cartProduct['id'], [
+            'quantity' => $request['quantity'],
+        ]);
+
+        return $this->response(message:'Product was updated successfully.');
+    }
+
+    /**
+     * @param DestroyProductInCartRequest $request
+     * @return JsonResponse
+     */
+    public function removeFromCart(DestroyProductInCartRequest $request): JsonResponse
+    {
+        $cart = $this->getCart();
+        $cartProduct = $this->cartProductService->getByCartAndProductId($cart['id'], $request['product_id']);
+
+        if (is_null($cartProduct)) {
+            return $this->response(
+                success:false,
+                status:404,
+                message:'Product not found in the cart.'
+            );
+        }
+
+        $this->cartProductService->destroyById($cartProduct['id']);
+
+        return $this->response(message:'Product was removed successfully.');
     }
 
     /**
      * @param BuyRequest $request
      * @return JsonResponse
      */
-    public function buy(BuyRequest $request): JsonResponse
+    public function pay(BuyRequest $request): JsonResponse
     {
         $user = auth()->user();
         $cart = $user['cart'];
@@ -72,19 +150,26 @@ class CartController extends Controller
 
         $expiration = Carbon::now()->addMinutes(2);
 
+        $orderStatus = $this->orderStatusService->firstByAlias('NA_OPLATU');
+
         $order = $this->orderService->create([
             'user_id' => $userId,
-            'order_status_id' => $paymentMethod,
-            'data' => $cart->products,
+            'order_status_id' => $orderStatus['id'],
+            'data' => $cart['products'],
             'payment_method_id' => $paymentMethod['id'],
         ]);
 
-        $token = Hash::make($userId . $order['id'] . $expiration . $paymentMethod['id']);
+        $token = md5($userId . $order['id'] . $paymentMethod['id']);
 
         $paymentLink = URL::temporarySignedRoute(
             'orders.pay',
             $expiration,
-            ['order_id' => $order['id'], 'payment_method_id' => $paymentMethod, 'token' => $token]
+            [
+                'user_id' => $userId,
+                'order_id' => $order['id'],
+                'payment_method_id' => $paymentMethod,
+                'token' => $token
+            ]
         );
 
         $cart->delete();

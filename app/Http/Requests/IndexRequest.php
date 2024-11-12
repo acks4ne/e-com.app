@@ -32,16 +32,6 @@ class IndexRequest extends BaseRequest
     }
 
     /**
-     * @param mixed $value
-     * @param int   $default
-     * @return int
-     */
-    protected function getNonNegativeValue(mixed $value, int $default): int
-    {
-        return (is_numeric($value) && (int) $value > 0) ? (int) $value : $default;
-    }
-
-    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, ValidationRule|array<mixed>|string>
@@ -49,8 +39,8 @@ class IndexRequest extends BaseRequest
     public function rules(): array
     {
         return [
-            'page' => ['nullable', 'int'],
-            'limit' => ['nullable', 'int'],
+            'page' => ['nullable', 'integer'],
+            'limit' => ['nullable', 'integer'],
         ];
     }
 }

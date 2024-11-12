@@ -31,23 +31,23 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::controller(CartController::class)->group(function () {
         Route::get('/cart', 'index')->name('carts.index');
-        //    Route::get('/cart', 'addToCart')->name('carts.addToCart');
-        //    Route::get('/cart', 'removeFromCart')->name('carts.removeFromCart');
-        //    Route::get('/cart', 'updateInCart')->name('carts.removeFromCart');
+        Route::post('/cart', 'addToCart')->name('carts.addToCart');
+        Route::delete('/cart', 'removeFromCart')->name('carts.removeFromCart');
+        Route::patch('/cart', 'updateInCart')->name('carts.updateInCart');
         Route::get('/cart/pay', 'pay')->name('carts.pay');
     });
-
-    Route::get('/payments/{orderId}', PaymentController::class)
-        ->name('orders.pay')
-        ->where('orderId', '[0-9]+');
-
-    Route::controller(CartController::class)->group(function () {
-        Route::get('/cart', 'index')->name('cart.index');
-    });
-
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 
-Route::post('/register', [AuthController::class, 'register'])->withoutMiddleware(['auth:sanctum'])->name('register');
-Route::post('/login', [AuthController::class, 'login'])->name('login');
+Route::get('/payments/{user_id}/{order_id}', PaymentController::class)
+    ->name('orders.pay')
+    ->setWheres(['orderId' => '[0-9]+', 'userId' => '[0-9]+'])
+    ->withoutMiddleware('auth:sanctum');
+
+Route::controller(AuthController::class)->group(function () {
+    Route::post('/register',
+        [AuthController::class, 'register'])->withoutMiddleware(['auth:sanctum'])->name('register');
+    Route::post('/login', [AuthController::class, 'login'])->name('login');
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth:sanctum');
+});
+
 

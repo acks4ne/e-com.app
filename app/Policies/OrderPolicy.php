@@ -14,6 +14,8 @@ class OrderPolicy
      */
     public function view(User $user, Order $order): bool
     {
+        dd($user, $order);
+
         return $user['id'] === $order['user_id'];
     }
 }

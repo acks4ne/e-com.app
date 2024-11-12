@@ -35,7 +35,7 @@ class User extends Authenticatable
     protected $hidden = [
         'password'
     ];
-    
+
     /**
      * @return BelongsTo
      */

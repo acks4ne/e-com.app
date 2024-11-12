@@ -4,6 +4,10 @@ namespace App\Services;
 
 use App\Repositories\Interfaces\CartProductRepositoryInterface;
 
+/**
+ *
+ * @method getByCartAndProductId(int $cartId, int $productId): CartProduct|null
+ */
 class CartProductService extends AbstractService
 {
     /**

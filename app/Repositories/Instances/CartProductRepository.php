@@ -16,4 +16,17 @@ class CartProductRepository extends AbstractRepository implements RepositoryInte
     {
         parent::__construct($model);
     }
+
+    /**
+     * @param int $cartId
+     * @param int $productId
+     * @return CartProduct|null
+     */
+    public function getByCartAndProductId(int $cartId, int $productId): CartProduct|null
+    {
+        return $this->newQuery()
+            ->where('cart_id', $cartId)
+            ->where('product_id', $productId)
+            ->first();
+    }
 }

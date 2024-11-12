@@ -19,7 +19,7 @@ class ProductFactory extends Factory
     {
         return [
             'name' => $this->faker->name(),
-            'price' => $this->faker->numberBetween(100, 9999),
+            'price' => $this->faker->randomFloat(100.0, 9999.0),
         ];
     }
 }
