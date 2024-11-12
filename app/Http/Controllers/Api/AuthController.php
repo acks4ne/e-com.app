@@ -41,7 +41,7 @@ class AuthController extends Controller
     public function login(LoginUserRequest $request): JsonResponse
     {
         if (!Auth::attempt($request->validated())) {
-            return response()->json([
+            return $this->response([
                 'message' => 'Invalid login or password provided'
             ], 401);
         }

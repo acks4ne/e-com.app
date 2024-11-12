@@ -21,7 +21,7 @@ class CartController extends Controller
 
     public function index()
     {
-        return auth()->user()->cart()->products;
+        dd(auth());
     }
 
     /**
