@@ -185,7 +185,9 @@ class CartController extends Controller
 
         $cart->delete();
 
-        $user->cart()->create();
+        $user['cart_id'] = $user->cart()->create()['id'];
+
+        $user->saveOrFail();
 
         return $this->response([
             'link' => $paymentLink

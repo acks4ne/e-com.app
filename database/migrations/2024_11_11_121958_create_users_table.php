@@ -18,8 +18,7 @@ return new class extends Migration
             $table->foreignId('cart_id')
                 ->nullable()
                 ->constrained('carts')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
+                ->nullOnDelete();
             $table->timestamps();
         });
 

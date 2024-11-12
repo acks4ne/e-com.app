@@ -28,7 +28,7 @@ class ApiExceptionsJsonResponse extends CustomJsonResponse
     {
         return [
             'body' => $this->buildResponseBody($e, $body),
-            'status' => $e->getCode() == 0 ? $config['status'] : $e->getCode(),
+            'status' => $config['status'] ?? 500,
         ];
     }
 
@@ -58,6 +58,7 @@ class ApiExceptionsJsonResponse extends CustomJsonResponse
         if (app()->isLocal()) {
             $body = array_merge($body, [
                 'type' => get_class($e),
+                'code' => $e->getCode(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
                 'trace' => $e->getTrace(),

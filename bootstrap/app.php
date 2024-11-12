@@ -6,6 +6,7 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request as HttpRequest;
 use Illuminate\Support\Facades\Request;
+use Nette\NotImplementedException;
 
 return Application::configure(basePath:dirname(__DIR__))
     ->withRouting(
@@ -28,10 +29,7 @@ return Application::configure(basePath:dirname(__DIR__))
                         return new ApiExceptionsJsonResponse($e, $config[get_class($e)] ?? $config['default'],
                             $config['body']);
                     } catch (Throwable $e) {
-                        return response()->json([
-                            'success' => false,
-                            'message' => $e->getMessage(),
-                        ], 500);
+                        throw new NotImplementedException('Exception: ' . $e->getMessage());
                     }
                 });
             }
