@@ -19,7 +19,7 @@ class PaymentMethodRepository extends AbstractRepository implements RepositoryIn
 
     /**
      * @param string $alias
-     * @return PaymentMethod|null
+     * @return null|PaymentMethod
      */
     public function firstByAlias(string $alias): ?PaymentMethod
     {

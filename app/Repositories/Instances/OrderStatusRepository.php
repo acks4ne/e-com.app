@@ -19,7 +19,7 @@ class OrderStatusRepository extends AbstractRepository implements RepositoryInte
 
     /**
      * @param string $alias
-     * @return OrderStatus|null
+     * @return null|OrderStatus
      */
     public function firstByAlias(string $alias): ?OrderStatus
     {

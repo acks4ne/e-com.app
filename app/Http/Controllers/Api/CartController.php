@@ -13,6 +13,7 @@ use App\Models\Cart;
 use App\Services\CartProductService;
 use App\Services\OrderService;
 use App\Services\OrderStatusService;
+use App\Services\PaymentMethodService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\URL;
@@ -20,9 +21,10 @@ use Illuminate\Support\Facades\URL;
 class CartController extends Controller
 {
     public function __construct(
-        protected OrderStatusService $orderStatusService,
-        protected OrderService       $orderService,
-        protected CartProductService $cartProductService,
+        protected OrderStatusService   $orderStatusService,
+        protected OrderService         $orderService,
+        protected CartProductService   $cartProductService,
+        protected PaymentMethodService $paymentMethodService
     ) {}
 
     /**
@@ -144,7 +146,7 @@ class CartController extends Controller
 
         $paymentMethod = $request->input('payment_method_id') ?? $request->input('payment_method_alias');
 
-        $paymentMethod = is_numeric($paymentMethod) ? $this->orderStatusService->firstById($paymentMethod) : $this->orderStatusService->firstByAlias($paymentMethod);
+        $paymentMethod = is_numeric($paymentMethod) ? $this->paymentMethodService->firstById($paymentMethod) : $this->paymentMethodService->firstByAlias($paymentMethod);
 
         $userId = $user['id'];
 

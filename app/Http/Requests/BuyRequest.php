@@ -23,7 +23,7 @@ class BuyRequest extends BaseRequest
     {
         return [
             'payment_method_id' => ['required_without:payment_method_alias', 'integer', 'exists:payment_methods,id'],
-            'payment_method_alias' => ['required_without:payment_method_id', 'integer', 'exists:payment_methods,alias'],
+            'payment_method_alias' => ['required_without:payment_method_id', 'string', 'exists:payment_methods,alias'],
         ];
     }
 }

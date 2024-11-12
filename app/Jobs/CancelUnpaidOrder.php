@@ -18,6 +18,9 @@ class CancelUnpaidOrder implements ShouldQueue
     protected OrderService $orderService;
     protected OrderStatusService $orderStatusService;
 
+    /**
+     * @param Order $order
+     */
     public function __construct(protected Order $order)
     {
         $this->orderService = app(OrderService::class);
