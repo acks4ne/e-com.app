@@ -13,9 +13,10 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('login',255)->unique();
+            $table->string('login', 255)->unique();
             $table->string('password');
             $table->foreignId('cart_id')
+                ->nullable()
                 ->constrained('carts')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();

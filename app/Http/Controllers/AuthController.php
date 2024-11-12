@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\LoginUserRequest;
 use App\Http\Requests\StoreUserRequest;
+use App\Services\CartService;
 use App\Services\UserService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -12,7 +13,8 @@ use Illuminate\Support\Facades\Hash;
 class AuthController extends Controller
 {
     public function __construct(
-        protected UserService $userService
+        protected UserService $userService,
+        protected CartService $cartService,
     ) {}
 
     /**
