@@ -15,10 +15,8 @@ class OrderStatusFactory extends Factory
      */
     public function definition(): array
     {
-        $name = fake()->unique()->name();
-
         return [
-            'name' => $name,
+            'name' => fake()->unique()->name(),
         ];
     }
 }

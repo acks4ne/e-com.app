@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Responses\ApiExceptionsJsonResponse;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -16,15 +17,23 @@ return Application::configure(basePath:dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {})
     ->withExceptions(function (Exceptions $exceptions) {
         if (request()->is('api/*')) {
-            $exceptions = $exceptions->shouldRenderJsonWhen(fn() => true);
+            $config = config('api-responses');
+            if (request()->is('api/*')) {
+                $exceptions = $exceptions->shouldRenderJsonWhen(fn() => true);
 
-            $exceptions->render(function (Throwable $e, Request|HttpRequest $request = null) {
-                report($e);
+                $exceptions->render(function (Throwable $e, Request|HttpRequest $request = null) use ($config) {
+                    report($e);
 
-                return response()->json([
-                    'success' => false,
-                    'message' => $e->getMessage(),
-                ], $e->getCode() > 0 && $e->getCode() < 503 ? $e->getCode() : 500);
-            });
+                    try {
+                        return new ApiExceptionsJsonResponse($e, $config[get_class($e)] ?? $config['default'],
+                            $config['body']);
+                    } catch (Throwable $e) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => $e->getMessage(),
+                        ], 500);
+                    }
+                });
+            }
         }
     })->create();
